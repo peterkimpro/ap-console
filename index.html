@@ -155,10 +155,14 @@
 </div>
 
 <script>
-  const R = 'REDACTED_REPO';
-  const W = 'iterate.yml';
   const params = new URLSearchParams(window.location.search);
+  const R = params.get('r') || '';
+  const W = params.get('w') || 'iterate.yml';
   const preAction = params.get('action') || '';
+
+  if (!R) {
+    document.querySelector('.card').innerHTML = '<h1>AP Console</h1><p style="color:#888;margin-top:12px;">Missing configuration.</p>';
+  }
 
   if (preAction) {
     const labels = {
@@ -178,7 +182,7 @@
     document.getElementById('action-buttons').appendChild(btn);
 
     const other = document.createElement('a');
-    other.href = window.location.pathname;
+    other.href = `${window.location.pathname}?r=${encodeURIComponent(R)}&w=${encodeURIComponent(W)}`;
     other.style.cssText = 'display:block;text-align:center;font-size:13px;color:#888;margin-top:8px;';
     other.textContent = 'All options';
     document.getElementById('action-buttons').appendChild(other);
