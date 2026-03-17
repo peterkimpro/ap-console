@@ -60,6 +60,7 @@
     .btn-image    { background: #17a2b8; color: white; }
     .btn-edit     { background: #6f42c1; color: white; }
     .btn-regen    { background: #6c757d; color: white; }
+    .btn-restore  { background: #f57c00; color: white; }
     .btn-submit   { background: #555; color: white; margin-top: 4px; }
     .btn-disabled { opacity: 0.4; pointer-events: none; }
 
@@ -159,9 +160,15 @@
   const R = params.get('r') || '';
   const W = params.get('w') || 'iterate.yml';
   const preAction = params.get('action') || '';
+  const preFeedback = params.get('feedback') || '';
 
   if (!R) {
     document.querySelector('.card').innerHTML = '<h1>AP Console</h1><p style="color:#888;margin-top:12px;">Missing configuration.</p>';
+  }
+
+  // Pre-fill feedback from URL parameter (used by restore-draft, edit-post, etc.)
+  if (preFeedback) {
+    document.getElementById('feedback').value = preFeedback;
   }
 
   if (preAction) {
@@ -169,13 +176,19 @@
       'new-image': 'Regen Asset',
       'edit-post': 'Revise',
       'full-regenerate': 'Start Over',
+      'restore-draft': 'Select Draft v' + preFeedback,
     };
     document.getElementById('action-subtitle').textContent = labels[preAction] || 'Controls';
     document.getElementById('action-label').textContent = 'Confirm:';
 
     document.getElementById('action-buttons').innerHTML = '';
     const btn = document.createElement('button');
-    const cls = { 'new-image': 'btn-image', 'edit-post': 'btn-edit', 'full-regenerate': 'btn-regen' }[preAction] || 'btn-submit';
+    const cls = {
+      'new-image': 'btn-image',
+      'edit-post': 'btn-edit',
+      'full-regenerate': 'btn-regen',
+      'restore-draft': 'btn-restore',
+    }[preAction] || 'btn-submit';
     btn.className = `btn ${cls}`;
     btn.textContent = labels[preAction] || preAction;
     btn.onclick = () => trigger(preAction);
@@ -192,6 +205,7 @@
       document.getElementById('feedback-label').textContent =
         preAction === 'edit-post' ? 'Notes (optional)' : 'Asset notes (optional)';
     }
+    // restore-draft: keep feedback hidden (version is pre-filled from URL)
   } else {
     document.getElementById('approve-section').style.display = 'block';
     document.getElementById('feedback-section').style.display = 'block';
